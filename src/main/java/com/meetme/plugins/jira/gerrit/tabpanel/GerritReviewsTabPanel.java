@@ -145,14 +145,14 @@ public class GerritReviewsTabPanel extends AbstractIssueTabPanel2 implements Iss
 
             if (user == null) user = UserUtils.getUserByEmail(email);
 
-            if (user == null) {
-                for (ApplicationUser iUser : userManager.getUsers()) {
-                    if (email.equalsIgnoreCase(iUser.getEmailAddress())) {
-                        user = iUser;
-                        break;
-                    }
-                }
-            }
+            // if (user == null) {
+            //     for (ApplicationUser iUser : userManager.getUsers()) {
+            //         if (email.equalsIgnoreCase(iUser.getEmailAddress())) {
+            //             user = iUser;
+            //             break;
+            //         }
+            //     }
+            // }
         }
 
         return user;
