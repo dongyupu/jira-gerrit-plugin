@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?><!--
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
     Copyright 2012 MeetMe, Inc.
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,268 +15,233 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<atlassian-plugin name="${project.name}" key="${project.groupId}.${project.artifactId}" plugins-version="2">
+    <plugin-info>
+        <description>${project.description}</description>
+        <version>${project.version}</version>
+        <vendor name="${project.organization.name}" url="${project.organization.url}" />
+        <param name="plugin-icon">images/gerrit-icon16.png</param>
+        <param name="plugin-logo">images/meetme_75.png</param>
+        <param name="vendor-icon">images/meetme_16.png</param>
+        <param name="vendor-logo">images/meetme_75.png</param>
+        <param name="plugin-type">both</param>
+        <param name="configure.url">/plugins/servlet/gerrit/admin</param>
+        <param name="atlassian-data-center-compatible">true</param>
+        <param name="atlassian-data-center-status">compatible</param>
+    </plugin-info>
 
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.meetme.plugins.jira</groupId>
-    <artifactId>gerrit-plugin</artifactId>
-    <version>3.5-SNAPSHOT</version>
+    <component-import interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory" key="pluginSettingsFactory" />
+    <component-import interface="com.atlassian.sal.api.transaction.TransactionTemplate" key="transactionTemplate" />
+    <component-import interface="com.atlassian.sal.api.user.UserManager" key="userManager" />
+    <component-import interface="com.atlassian.sal.api.auth.LoginUriProvider" key="loginUriProvider" />
+    <component-import interface="com.atlassian.templaterenderer.velocity.one.six.VelocityTemplateRenderer" key="velocity-renderer" />
+    <component-import interface="com.atlassian.sal.api.ApplicationProperties" key="applicationProperties" />
+    <component-import interface="com.atlassian.sal.api.message.I18nResolver" key="i18nResolver" />
 
-    <organization>
-        <name>MeetMe, Inc.</name>
-        <url>http://www.meetme.com/</url>
-    </organization>
+    <!-- Our Components -->
 
-    <name>JIRA Gerrit Plugin</name>
-    <description>Integrates Atlassian JIRA with Gerrit code review.</description>
-    <issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/MeetMe/jira-gerrit-plugin/issues</url>
-    </issueManagement>
-    <inceptionYear>2012</inceptionYear>
+    <component name="Configuration Manager" class="com.meetme.plugins.jira.gerrit.data.GerritConfigurationImpl" key="configurationManager">
+        <description>Stores the Gerrit configuration</description>
+        <interface>com.meetme.plugins.jira.gerrit.data.GerritConfiguration</interface>
+    </component>
 
-    <packaging>atlassian-plugin</packaging>
+    <component name="IssueReviews Manager" class="com.meetme.plugins.jira.gerrit.data.IssueReviewsImpl" key="issueReviewsManager">
+        <description>Retrieves Gerrit reviews related to a given JIRA Issue.</description>
+        <interface>com.meetme.plugins.jira.gerrit.data.IssueReviewsManager</interface>
+    </component>
 
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>manual</distribution>
-            <comments>A business-friendly OSS license</comments>
-        </license>
-    </licenses>
+    <component name="IssueReviews Cache Loader" class="com.meetme.plugins.jira.gerrit.data.IssueReviewsCacheLoader" key="issueReviewsCacheLoader">
+        <description>Populates the cached list of reviews per issue.</description>
+    </component>
 
-    <developers>
-        <developer>
-            <id>jhansche</id>
-            <name>Joe Hansche</name>
-            <email>jhansche@meetme.com</email>
-            <organization>MeetMe, Inc.</organization>
-            <organizationUrl>http://www.meetme.com/</organizationUrl>
-            <roles>
-                <role>developer</role>
-                <role>maintainer</role>
-            </roles>
-            <timezone>-4</timezone>
-        </developer>
-    </developers>
+    <template-context-item name="Application Properties Context Item"
+        component-ref="applicationProperties"
+        context-key="applicationProperties"
+        key="applicationPropertiesContextItem" />
 
-    <dependencies>
-        <!-- Base Atlassian requirements -->
-        <dependency>
-            <groupId>com.atlassian.jira</groupId>
-            <artifactId>jira-api</artifactId>
-            <version>${jira.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.atlassian.jira</groupId>
-            <artifactId>jira-tests</artifactId>
-            <version>${jira.test.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.atlassian.jira</groupId>
-            <artifactId>jira-func-tests</artifactId>
-            <version>${jira.test.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.5</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- Project Atlassian requirements -->
-        <dependency>
-            <groupId>com.atlassian.sal</groupId>
-            <artifactId>sal-api</artifactId>
-            <version>${atlas.sal.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.atlassian.templaterenderer</groupId>
-            <artifactId>atlassian-template-renderer-api</artifactId>
-            <version>${atlas.template.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <!-- Not automatically provided in <5.0 -->
-            <groupId>com.atlassian.util.concurrent</groupId>
-            <artifactId>atlassian-util-concurrent</artifactId>
-            <version>${atlas.concurrent.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.atlassian.plugins.rest</groupId>
-            <artifactId>atlassian-rest-common</artifactId>
-            <version>${jira.rest.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.4</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
-            <version>1.1.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.2.12</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>27.0.1-jre</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.25</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- Project dependencies -->
-        <dependency>
-            <!-- Using this for gerrit integration -->
-            <groupId>com.sonyericsson.hudson.plugins.gerrit</groupId>
-            <artifactId>gerrit-events</artifactId>
-            <version>1.99.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.jcraft</groupId>
-                    <artifactId>jsch</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <!-- Using this for ssh -->
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch</artifactId>
-            <version>0.1.55</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>1.3</version>
-        </dependency>
-    </dependencies>
+    <!-- Admin panel -->
+    <web-resource name="Admin Web Resources" key="admin-resources">
+        <dependency>com.atlassian.auiplugin:ajs</dependency>
+        <dependency>com.atlassian.auiplugin:aui-select2</dependency>
+        <!--<resource type="download" name="admin.js" location="js/admin.js" />-->
+    </web-resource>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.atlassian.maven.plugins</groupId>
-                <artifactId>maven-jira-plugin</artifactId>
-                <version>${amps.version}</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <productVersion>${jira.version}</productVersion>
-                    <productDataVersion>${jira.version}</productDataVersion>
-                    <log4jProperties>src/aps/resources/log4j.properties</log4jProperties>
-                    <enableQuickReload>true</enableQuickReload>
-                    <enableFastdev>false</enableFastdev>
+    <web-item name="Gerrit Admin" application="jira" key="jira-menu-item" section="admin_plugins_menu/source_control" weight="10">
+        <description>Link to Gerrit site configuration page.</description>
+        <label key="gerrit.admin.label" />
+        <link linkId="gerrit-admin-link">/plugins/servlet/gerrit/admin</link>
+    </web-item>
 
-                    <pluginArtifacts>
-                        <pluginArtifact>
-                            <groupId>com.atlassian.labs.plugins</groupId>
-                            <artifactId>quickreload</artifactId>
-                            <version>${quick.reload.version}</version>
-                        </pluginArtifact>
-                    </pluginArtifacts>
+    <servlet class="com.meetme.plugins.jira.gerrit.adminui.AdminServlet" key="admin-servlet">
+        <resource name="i18n" location="i18n.admin" type="i18n" />
+        <url-pattern>/gerrit/admin</url-pattern>
+    </servlet>
 
-                    <products>
-                        <product>
-                            <id>jira</id>
-                            <version>${jira.version}</version>
-                        </product>
-                    </products>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.scm</groupId>
-                        <artifactId>maven-scm-provider-gitexe</artifactId>
-                        <version>1.11.2</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    <!-- Issue tab for Gerrit Reviews -->
 
-    <properties>
-        <jira.version>7.2.0</jira.version>
-        <amps.version>6.3.21</amps.version>
-        <plugin.testrunner.version>1.2.3</plugin.testrunner.version>
-        <atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
-        <testkit.version>6.3.11</testkit.version>
-        <quick.reload.version>1.30.5</quick.reload.version>
+    <issue-tabpanel name="Gerrit Reviews Tab Panel"
+        class="com.meetme.plugins.jira.gerrit.tabpanel.GerritReviewsTabPanel"
+        key="gerrit-reviews-tabpanel">
+        <description>Show Gerrit reviews related to an issue in an issue tab panel.</description>
+        <label key="gerrit.tabpanel.label">Gerrit Reviews</label>
+        <resource name="view" location="templates/gerrit-reviews-tabpanel-item.vm" type="velocity" />
+        <resource name="i18n" location="i18n.tabpanel" type="i18n" />
+        <!-- enable fast tab switch -->
+        <supports-ajax-load>true</supports-ajax-load>
+    </issue-tabpanel>
 
-        <jira.test.version>7.2.0</jira.test.version>
-        <jira.data.version>7.2.0</jira.data.version>
-        <jira.rest.version>3.0.8</jira.rest.version>
-        <atlas.template.version>3.0.0</atlas.template.version>
-        <atlas.concurrent.version>3.0.0</atlas.concurrent.version>
-        <atlas.sal.version>3.0.5</atlas.sal.version>
-    </properties>
+    <web-resource name="GerritTabPanelResources" key="gerritReviewsTabPanel">
+        <context>jira.view.issue</context>
+        <dependency>jira.webresources:viewissue</dependency>
+        <!-- <resource type="download" name="tabpanel.js" location="js/gerrit-reviews-tabpanel.js" /> -->
+        <resource name="tabpanel.css" location="styles/gerrit-reviews-tabpanel.css" type="download" />
+        <resource name="images/" location="images/" type="download" />
+    </web-resource>
 
-    <profiles>
-        <profile>
-            <id>release</id>
-            <properties>
-                <skip.tests>true</skip.tests>
-                <skip.func.tests>true</skip.func.tests>
-            </properties>
-        </profile>
-    </profiles>
+    <!-- Tab panel to list Gerrit Reviews for each subtask -->
 
-    <distributionManagement>
-        <repository>
-            <id>releases</id>
-            <name>MeetMe Release Repository</name>
-            <url>https://nexus.meetmecorp.com/nexus/content/repositories/releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>MeetMe Snapshot Repository</name>
-            <url>https://nexus.meetmecorp.com/nexus/content/repositories/snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
+    <issue-tabpanel name="Subtask Gerrit Reviews Tab Panel"
+        class="com.meetme.plugins.jira.gerrit.tabpanel.SubtaskReviewsTabPanel"
+        key="subtask-reviews-tabpanel">
+        <description>Show Gerrit reviews related issue subtasks in the parent issue's tab panel.</description>
+        <label key="gerrit.tabpanel.subtasks.label">Gerrit Subtask Reviews</label>
+        <resource name="view" location="templates/subtask-reviews-tabpanel-item.vm" type="velocity" />
+        <resource name="i18n" location="i18n.tabpanel" type="i18n" />
+        <!-- enable fast tab switch -->
+        <supports-ajax-load>true</supports-ajax-load>
+    </issue-tabpanel>
 
-    <scm>
-        <connection>scm:git:git://github.com/MeetMe/jira-gerrit-plugin.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/MeetMe/jira-gerrit-plugin.git</developerConnection>
-        <url>https://github.com/MeetMe/jira-gerrit-plugin</url>
-        <tag>HEAD</tag>
-    </scm>
+    <!-- View Issue right-side panel (disabled by default) -->
 
-</project>
+    <web-panel name="Gerrit Reviews Side Panel"
+        i18n-name-key="gerrit-reviews-side-panel.name"
+        key="gerrit-reviews-side-panel"
+        location="atl.jira.view.issue.right.context"
+        state="disabled">
+        <description key="gerrit-reviews-side-panel.description">Show Gerrit reviews in the View Issue side panel</description>
+        <label key="gerrit-reviews-side-panel.label">Gerrit Reviews</label>
+        <context-provider class="com.meetme.plugins.jira.gerrit.webpanel.GerritReviewsIssueSidePanel" />
+        <resource name="i18n" location="i18n.webpanel" type="i18n" />
+        <resource name="view" location="templates/gerrit-reviews-side-panel.vm" type="velocity" />
+    </web-panel>
+
+    <!-- View Issue left-side panel -->
+
+    <web-panel name="Gerrit Reviews Main Panel"
+        i18n-name-key="gerrit-reviews-left-panel.name"
+        key="gerritreviewsmodule"
+        location="atl.jira.view.issue.left.context"
+        weight="750"
+        state="disabled">
+        <description key="gerrit-reviews-left-panel.description">Show Gerrit reviews in a View Issue panel</description>
+        <label key="gerrit-reviews-left-panel.label">Gerrit Reviews</label>
+        <context-provider class="com.meetme.plugins.jira.gerrit.webpanel.GerritReviewsIssueLeftPanel" />
+        <resource name="i18n" location="i18n.webpanel" type="i18n" />
+        <resource name="view" location="templates/gerrit-reviews-left-panel.vm" type="velocity" />
+        <condition class="com.meetme.plugins.jira.gerrit.webpanel.ShowReviewsWebPanelCondition" />
+        <supports-ajax-load>true</supports-ajax-load>
+    </web-panel>
+
+    <!-- TODO: add conditions for some of these view options, and maybe even for the module itself? -->
+    <web-section name="Issue Type View Options Section"
+        key="issuetype-view-options"
+        location="com.meetme.plugins.jira.gerrit-plugin:gerritreviewsmodule/drop"
+        weight="10" />
+
+    <web-item-provider name="View Reviews View Options Provider"
+        class="com.meetme.plugins.jira.gerrit.webpanel.IssueTypeOptionsProvider"
+        key="issuetype-view-options-factory"
+        lazy="false"
+        section="com.meetme.plugins.jira.gerrit-plugin:gerritreviewsmodule/drop/issuetype-view-options"
+        weight="10" />
+
+    <web-section name="Review Status View Options Section"
+        key="reviewstatus-view-options"
+        location="com.meetme.plugins.jira.gerrit-plugin:gerritreviewsmodule/drop"
+        weight="20" />
+
+    <web-item-provider name="View Reviews View Options Factory"
+        class="com.meetme.plugins.jira.gerrit.webpanel.ReviewStatusOptionsProvider"
+        key="reviewstatus-view-options-factory"
+        lazy="false"
+        section="com.meetme.plugins.jira.gerrit-plugin:gerritreviewsmodule/drop/reviewstatus-view-options"
+        weight="10" />
+
+    <web-section name="Issue Status View Options Section"
+        key="issuestatus-view-options"
+        location="com.meetme.plugins.jira.gerrit-plugin:gerritreviewsmodule/drop"
+        weight="30" />
+
+    <web-item-provider name="Issue Status View Options Factory"
+        class="com.meetme.plugins.jira.gerrit.webpanel.IssueStatusOptionsProvider"
+        key="issuestatus-view-options-factory"
+        lazy="false"
+        section="com.meetme.plugins.jira.gerrit-plugin:gerritreviewsmodule/drop/issuestatus-view-options"
+        weight="10" />
+
+    <!-- Workflow Conditions -->
+
+    <!-- 1. Must have zero open reviews (or reversed logic) -->
+    <workflow-condition class="com.meetme.plugins.jira.gerrit.workflow.NoOpenReviewsConditionFactoryImpl"
+        i18n-name-key="gerrit.workflow.no-open-reviews.label"
+        key="no-open-reviews">
+        <description>Condition to allow a workflow transition based on whether there are open Gerrit reviews.</description>
+        <condition-class>com.meetme.plugins.jira.gerrit.workflow.condition.NoOpenReviews</condition-class>
+        <resource name="view" location="templates/workflow/no-open-reviews-condition-view.vm" type="velocity" />
+        <resource name="edit-parameters" location="templates/workflow/no-open-reviews-condition-edit.vm" type="velocity" />
+        <resource name="input-parameters" location="templates/workflow/no-open-reviews-condition-edit.vm" type="velocity" />
+        <resource name="i18n" location="i18n.workflow" type="i18n" />
+    </workflow-condition>
+
+    <!-- 2. Must [or not] have [ operator ] N score for [type] -->
+    <workflow-condition class="com.meetme.plugins.jira.gerrit.workflow.ApprovalScoreConditionFactoryImpl"
+        i18n-name-key="gerrit.workflow.score-condition.label"
+        key="score-condition">
+        <description>Condition to allow a workflow transition based on existing approval scores.</description>
+        <condition-class>com.meetme.plugins.jira.gerrit.workflow.condition.ApprovalScore</condition-class>
+        <resource name="view" location="templates/workflow/score-condition-view.vm" type="velocity" />
+        <resource name="edit-parameters" location="templates/workflow/score-condition-edit.vm" type="velocity" />
+        <resource name="input-parameters" location="templates/workflow/score-condition-edit.vm" type="velocity" />
+        <resource name="i18n" location="i18n.workflow" type="i18n" />
+    </workflow-condition>
+
+    <!-- Workflow Functions -->
+
+    <workflow-function class="com.meetme.plugins.jira.gerrit.workflow.ApproveReviewFactoryImpl"
+        i18n-name-key="gerrit.workflow.approve.label"
+        key="gerrit-approve">
+        <description>Perform Gerrit Review Approval</description>
+        <function-class>com.meetme.plugins.jira.gerrit.workflow.function.ApprovalFunction</function-class>
+        <orderable>true</orderable>
+        <unique>false</unique>
+        <deletable>true</deletable>
+        <resource name="view" location="templates/workflow/approve-function-view.vm" type="velocity" />
+        <resource name="input-parameters" location="templates/workflow/approve-function-edit.vm" type="velocity" />
+        <resource name="edit-parameters" location="templates/workflow/approve-function-edit.vm" type="velocity" />
+    </workflow-function>
+
+    <!--
+          Future ideas:
+          1. Workflow precondition - DONE
+          2. Workflow event listener / post-functions
+          3. Gerrit events-stream listener?
+          4. Gadget on dashboard?
+          5. JQL Functions?
+      -->
+
+    <web-panel name="Gerrit Reviews Agile Details Panel"
+        i18n-name-key="gerrit-reviews-side-panel.name"
+        key="gerrit-reviews-agile-panel"
+        location="atl.gh.issue.details.tab"
+        weight="1000"
+        state="disabled">
+        <description key="gerrit-reviews-side-panel.description">Show Gerrit reviews in the Agile Details panel</description>
+        <label key="gerrit-reviews-side-panel.label">Gerrit Reviews</label>
+        <context-provider class="com.meetme.plugins.jira.gerrit.webpanel.GerritReviewsIssueAgilePanel" />
+        <resource name="i18n" location="i18n.webpanel" type="i18n" />
+        <resource name="view" location="templates/gerrit-reviews-agile-panel.vm" type="velocity" />
+        <resource name="icon.png" location="images/gerrit-icon16.png" type="download" />
+        <label key="gh.issue.panel.reference" />
+        <tooltip key="gh.issue.panel.reference.tooltip" />
+    </web-panel>
+</atlassian-plugin>
