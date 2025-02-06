@@ -15,26 +15,22 @@ package com.meetme.plugins.jira.gerrit.webpanel;
 
 import com.meetme.plugins.jira.gerrit.SessionKeys;
 
+import webwork.action.ActionContext;
+
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.util.I18nHelper;
-import com.atlassian.jira.util.collect.CollectionBuilder;
 import com.atlassian.jira.util.velocity.VelocityRequestContext;
 import com.atlassian.jira.util.velocity.VelocityRequestContextFactory;
-import com.atlassian.jira.util.velocity.VelocityRequestSession;
 import com.atlassian.plugin.web.api.WebItem;
-import com.atlassian.plugin.web.api.model.WebFragmentBuilder;
 import com.atlassian.plugin.web.api.provider.WebItemProvider;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Map;
 
 public class IssueTypeOptionsProvider implements WebItemProvider {
-    private static final Logger log = LoggerFactory.getLogger(IssueTypeOptionsProvider.class);
-
     public static final String ISSUE_ONLY = "IssueOnly";
     public static final String SUBTASK_ONLY = "SubtaskOnly";
     public static final String ALL_ISSUES = "All";
@@ -55,10 +51,9 @@ public class IssueTypeOptionsProvider implements WebItemProvider {
         final I18nHelper i18n = authenticationContext.getI18nHelper();
         final Issue issue = (Issue) params.get("issue");
 
-        final VelocityRequestSession session = requestContext.getSession();
         final String baseUrl = requestContext.getBaseUrl();
 
-        String issueType = (String) session.getAttribute(SessionKeys.VIEWISSUE_REVIEWS_ISSUETYPE);
+        String issueType = (String) ActionContext.getSession().get(SessionKeys.VIEWISSUE_REVIEWS_ISSUETYPE);
 
         if (StringUtils.isEmpty(issueType) || issue.getSubTaskObjects().isEmpty()) {
             issueType = DEFAULT_ISSUE_TYPE;
@@ -75,7 +70,7 @@ public class IssueTypeOptionsProvider implements WebItemProvider {
 
         if (issue.getSubTaskObjects().isEmpty()) {
             // Contains no subtasks, so no reason to show the others
-            return CollectionBuilder.list(issueOnlyLink);
+            return Arrays.asList(issueOnlyLink);
         }
 
         // Contains subtasks, expose the other options now
@@ -95,7 +90,7 @@ public class IssueTypeOptionsProvider implements WebItemProvider {
                 .url(getUrlForType(ALL_ISSUES, baseUrl, issue))
                 .build();
 
-        return CollectionBuilder.list(issueOnlyLink, subtaskOnlyLink, allLink);
+        return Arrays.asList(issueOnlyLink, subtaskOnlyLink, allLink);
     }
 
     private String getUrlForType(String type, String baseUrl, Issue issue) {

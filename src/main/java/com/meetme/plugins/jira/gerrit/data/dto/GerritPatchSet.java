@@ -13,8 +13,8 @@
  */
 package com.meetme.plugins.jira.gerrit.data.dto;
 
-import com.sonyericsson.hudson.plugins.gerrit.gerritevents.dto.GerritEventKeys;
-import com.sonyericsson.hudson.plugins.gerrit.gerritevents.dto.attr.PatchSet;
+import com.sonymobile.tools.gerrit.gerritevents.dto.GerritEventKeys;
+import com.sonymobile.tools.gerrit.gerritevents.dto.attr.PatchSet;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;

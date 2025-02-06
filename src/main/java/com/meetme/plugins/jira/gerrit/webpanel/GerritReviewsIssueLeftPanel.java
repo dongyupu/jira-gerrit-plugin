@@ -20,11 +20,11 @@ import com.meetme.plugins.jira.gerrit.data.dto.GerritChange;
 
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.plugin.webfragment.CacheableContextProvider;
-import com.atlassian.jira.plugin.webfragment.JiraWebInterfaceManager;
+import com.atlassian.jira.plugin.webfragment.JiraWebContext;
 import com.atlassian.jira.plugin.webfragment.model.JiraHelper;
 import com.atlassian.jira.util.collect.MapBuilder;
 import com.atlassian.plugin.PluginParseException;
-import com.sonyericsson.hudson.plugins.gerrit.gerritevents.GerritQueryException;
+import com.sonymobile.tools.gerrit.gerritevents.GerritQueryException;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -154,28 +154,32 @@ public class GerritReviewsIssueLeftPanel implements CacheableContextProvider {
         changes.addAll(reviewsManager.getReviewsForIssue(issue));
     }
 
+    @SuppressWarnings("unchecked")
     private void setUpRequestParams(Map<String, Object> context) {
         // This is a little unorthodox... We're being rendered inside the ViewIssue web action,
         // which is where other modules manage their session vars, but we don't have access to that
         // automation the same way.
         // So instead, we have to manually retrieve the request parameter(s), and stuff those into
         // the session ourselves.
-        final JiraHelper jiraHelper = (JiraHelper) context.get(JiraWebInterfaceManager.CONTEXT_KEY_HELPER);
+        final JiraHelper jiraHelper = (JiraHelper) context.get(JiraWebContext.CONTEXT_KEY_HELPER);
         final String gerritIssueType = jiraHelper.getRequest().getParameter("gerritIssueType");
         final String gerritReviewStatus = jiraHelper.getRequest().getParameter("gerritReviewStatus");
         final String gerritIssueStatus = jiraHelper.getRequest().getParameter("gerritIssueStatus");
 
-        if (gerritIssueType != null) {
-            setGerritIssueType(gerritIssueType);
+        if (gerritIssueType != null && !StringUtils.isBlank(gerritIssueType)) {
+            this.gerritIssueType = gerritIssueType;
         }
+        ActionContext.getSession().put(SessionKeys.VIEWISSUE_REVIEWS_ISSUETYPE, this.gerritIssueType);
 
-        if (gerritReviewStatus != null) {
-            setGerritReviewStatus(gerritReviewStatus);
+        if (gerritReviewStatus != null && !StringUtils.isBlank(gerritReviewStatus)) {
+            this.gerritReviewStatus = gerritReviewStatus;
         }
+        ActionContext.getSession().put(SessionKeys.VIEWISSUE_REVIEWS_REVIEWSTATUS, this.gerritReviewStatus);
 
-        if (gerritIssueStatus != null) {
-            setGerritIssueStatus(gerritIssueStatus);
+        if (gerritIssueStatus != null && !StringUtils.isBlank(gerritIssueStatus)) {
+            this.gerritIssueStatus = gerritIssueStatus;
         }
+        ActionContext.getSession().put(SessionKeys.VIEWISSUE_REVIEWS_ISSUESTATUS, this.gerritIssueStatus);
     }
 
     @Override
@@ -196,17 +200,6 @@ public class GerritReviewsIssueLeftPanel implements CacheableContextProvider {
         return gerritIssueType;
     }
 
-    @SuppressWarnings("unchecked")
-    public void setGerritIssueType(final String gerritIssueType) {
-        if (!StringUtils.isBlank(gerritIssueType) && !gerritIssueType.equals(IssueTypeOptionsProvider.DEFAULT_ISSUE_TYPE)) {
-            this.gerritIssueType = gerritIssueType;
-            ActionContext.getSession().put(SessionKeys.VIEWISSUE_REVIEWS_ISSUETYPE, gerritIssueType);
-        } else {
-            this.gerritIssueType = null;
-            ActionContext.getSession().put(SessionKeys.VIEWISSUE_REVIEWS_ISSUETYPE, null);
-        }
-    }
-
     public String getGerritReviewStatus() {
         if (gerritReviewStatus == null) {
             gerritReviewStatus = (String) ActionContext.getSession().get(SessionKeys.VIEWISSUE_REVIEWS_REVIEWSTATUS);
@@ -219,17 +212,6 @@ public class GerritReviewsIssueLeftPanel implements CacheableContextProvider {
         return gerritReviewStatus;
     }
 
-    @SuppressWarnings("unchecked")
-    public void setGerritReviewStatus(String gerritReviewStatus) {
-        if (!StringUtils.isBlank(gerritReviewStatus) && !gerritReviewStatus.equals(ReviewStatusOptionsProvider.DEFAULT_STATUS)) {
-            this.gerritReviewStatus = gerritReviewStatus;
-            ActionContext.getSession().put(SessionKeys.VIEWISSUE_REVIEWS_REVIEWSTATUS, gerritReviewStatus);
-        } else {
-            this.gerritReviewStatus = null;
-            ActionContext.getSession().put(SessionKeys.VIEWISSUE_REVIEWS_REVIEWSTATUS, null);
-        }
-    }
-
     public String getGerritIssueStatus() {
         if (gerritIssueStatus == null) {
             gerritIssueStatus = (String) ActionContext.getSession().get(SessionKeys.VIEWISSUE_REVIEWS_ISSUESTATUS);
@@ -240,16 +222,5 @@ public class GerritReviewsIssueLeftPanel implements CacheableContextProvider {
         }
 
         return gerritIssueStatus;
-    }
-
-    @SuppressWarnings("unchecked")
-    public void setGerritIssueStatus(String gerritIssueStatus) {
-        if (!StringUtils.isBlank(gerritIssueStatus) && !gerritIssueStatus.equals(IssueStatusOptionsProvider.DEFAULT_STATUS)) {
-            this.gerritIssueStatus = gerritIssueStatus;
-            ActionContext.getSession().put(SessionKeys.VIEWISSUE_REVIEWS_ISSUESTATUS, gerritIssueStatus);
-        } else {
-            this.gerritIssueStatus = null;
-            ActionContext.getSession().put(SessionKeys.VIEWISSUE_REVIEWS_ISSUESTATUS, null);
-        }
     }
 }

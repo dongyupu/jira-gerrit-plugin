@@ -29,7 +29,7 @@ import com.atlassian.jira.user.UserUtils;
 import com.atlassian.jira.user.util.UserManager;
 import com.atlassian.sal.api.ApplicationProperties;
 import com.atlassian.sal.api.message.I18nResolver;
-import com.sonyericsson.hudson.plugins.gerrit.gerritevents.GerritQueryException;
+import com.sonymobile.tools.gerrit.gerritevents.GerritQueryException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -18,17 +18,18 @@ import com.meetme.plugins.jira.gerrit.SessionKeys;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.security.JiraAuthenticationContext;
 import com.atlassian.jira.util.I18nHelper;
-import com.atlassian.jira.util.collect.CollectionBuilder;
 import com.atlassian.jira.util.velocity.VelocityRequestContext;
 import com.atlassian.jira.util.velocity.VelocityRequestContextFactory;
-import com.atlassian.jira.util.velocity.VelocityRequestSession;
 import com.atlassian.plugin.web.api.WebItem;
-import com.atlassian.plugin.web.api.model.WebFragmentBuilder;
 import com.atlassian.plugin.web.api.provider.WebItemProvider;
 
+import webwork.action.ActionContext;
+
+import java.util.Arrays;
 import java.util.Map;
 
 public class ReviewStatusOptionsProvider implements WebItemProvider {
+
     public static final String STATUS_OPEN = "Open";
     public static final String STATUS_ALL = "All";
     public static final String DEFAULT_STATUS = STATUS_ALL;
@@ -47,10 +48,8 @@ public class ReviewStatusOptionsProvider implements WebItemProvider {
         final I18nHelper i18n = authenticationContext.getI18nHelper();
         final Issue issue = (Issue) params.get("issue");
 
-        final VelocityRequestSession session = requestContext.getSession();
         final String baseUrl = requestContext.getBaseUrl();
-
-        String reviewStatus = (String) session.getAttribute(SessionKeys.VIEWISSUE_REVIEWS_REVIEWSTATUS);
+        String reviewStatus = (String) ActionContext.getSession().get(SessionKeys.VIEWISSUE_REVIEWS_REVIEWSTATUS);
 
         if (reviewStatus == null) {
             reviewStatus = DEFAULT_STATUS;
@@ -74,7 +73,7 @@ public class ReviewStatusOptionsProvider implements WebItemProvider {
                 .url(getUrlForType(STATUS_OPEN, baseUrl, issue))
                 .build();
 
-        return CollectionBuilder.list(allLink, openLink);
+        return Arrays.asList(allLink, openLink);
     }
 
     private String getUrlForType(String type, String baseUrl, Issue issue) {

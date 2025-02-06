@@ -15,7 +15,8 @@ package com.meetme.plugins.jira.gerrit.data.dto;
 
 import com.meetme.plugins.jira.gerrit.tabpanel.GerritEventKeys;
 
-import com.sonyericsson.hudson.plugins.gerrit.gerritevents.dto.attr.Change;
+import com.sonymobile.tools.gerrit.gerritevents.dto.attr.Change;
+import com.sonymobile.tools.gerrit.gerritevents.dto.GerritChangeStatus;
 
 import net.sf.json.JSONObject;
 
@@ -28,13 +29,9 @@ import static com.meetme.plugins.jira.gerrit.tabpanel.GerritEventKeys.LAST_UPDAT
  */
 public class GerritChange extends Change implements Comparable<GerritChange> {
 
-    private Date lastUpdated;
-
     private GerritPatchSet patchSet;
 
     private boolean isOpen;
-
-    private String status;
 
     public GerritChange() {
         super();
@@ -72,37 +69,24 @@ public class GerritChange extends Change implements Comparable<GerritChange> {
     public void fromJson(JSONObject json) {
         super.fromJson(json);
 
-        this.lastUpdated = new Date(1000 * json.getLong(LAST_UPDATED));
-
         if (json.containsKey(GerritEventKeys.CURRENT_PATCH_SET)) {
             this.patchSet = new GerritPatchSet(json.getJSONObject(GerritEventKeys.CURRENT_PATCH_SET));
         }
 
-        if (json.containsKey(GerritEventKeys.STATUS)) {
-            this.setStatus(json.getString(GerritEventKeys.STATUS));
-        }
+        this.setStatus(
+            GerritChangeStatus.fromString(
+                json.getString(GerritEventKeys.STATUS))
+        );
 
         this.isOpen = json.getBoolean(GerritEventKeys.OPEN);
-    }
-
-    public Date getLastUpdated() {
-        return lastUpdated;
     }
 
     public GerritPatchSet getPatchSet() {
         return patchSet;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
     public boolean isOpen() {
         return isOpen;
-    }
-
-    public void setLastUpdated(Date lastUpdated) {
-        this.lastUpdated = lastUpdated;
     }
 
     public void setOpen(boolean isOpen) {
@@ -111,9 +95,5 @@ public class GerritChange extends Change implements Comparable<GerritChange> {
 
     public void setPatchSet(GerritPatchSet patchSet) {
         this.patchSet = patchSet;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 }

@@ -1,0 +1,7 @@
+{
+	"java.configuration.maven.userSettings": "${env:ATLASSIAN_SDK}/conf/settings.xml",
+	"java.configuration.updateBuildConfiguration": "disabled",
+	"java.compile.nullAnalysis.mode": "automatic",
+	"java.maven.downloadSources": true,
+	"maven.executable.preferMavenWrapper": false
+}

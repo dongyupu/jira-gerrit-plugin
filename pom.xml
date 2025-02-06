@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.meetme.plugins.jira</groupId>
     <artifactId>gerrit-plugin</artifactId>
-    <version>3.5-SNAPSHOT</version>
+    <version>4.0-SNAPSHOT</version>
 
     <organization>
         <name>MeetMe, Inc.</name>
@@ -70,16 +70,15 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.atlassian.jira</groupId>
             <artifactId>jira-core</artifactId>
             <version>${jira.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.core</groupId>
+            <artifactId>atlassian-core-user</artifactId>
+            <version>9.1.1</version>
         </dependency>
         <dependency>
             <groupId>com.atlassian.jira</groupId>
@@ -91,6 +90,40 @@
             <groupId>com.atlassian.jira</groupId>
             <artifactId>jira-func-tests</artifactId>
             <version>${jira.test.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.plugins</groupId>
+            <artifactId>atlassian-plugins-api</artifactId>
+            <version>9.0.0-jakarta-m002</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.plugins</groupId>
+            <artifactId>atlassian-plugins-webfragment-api</artifactId>
+            <version>8.0.0-jakarta-m002</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.plugins</groupId>
+            <artifactId>atlassian-plugins-webresource-api</artifactId>
+            <version>8.0.0-jakarta-m001</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.cache</groupId>
+            <artifactId>atlassian-cache-api</artifactId>
+            <version>7.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>webwork</groupId>
+            <artifactId>webwork</artifactId>
+            <version>jira-1.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -160,9 +193,9 @@
         <!-- Project dependencies -->
         <dependency>
             <!-- Using this for gerrit integration -->
-            <groupId>com.sonyericsson.hudson.plugins.gerrit</groupId>
+            <groupId>com.sonymobile.tools.gerrit</groupId>
             <artifactId>gerrit-events</artifactId>
-            <version>1.99.1</version>
+            <version>2.21.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.jcraft</groupId>
@@ -171,10 +204,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <!-- Using this for ssh -->
-            <groupId>com.jcraft</groupId>
+            <groupId>com.github.mwiede</groupId>
             <artifactId>jsch</artifactId>
-            <version>0.1.55</version>
+            <version>0.2.23</version>
         </dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>
@@ -236,6 +268,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
+                <version>2.3.2</version>
 				<configuration>
 					<skip>true</skip>
 				</configuration>
@@ -244,20 +277,15 @@
     </build>
 
     <properties>
-        <jira.version>9.4.2</jira.version>
-        <amps.version>8.1.2</amps.version>
-        <plugin.testrunner.version>2.0.2</plugin.testrunner.version>
-        <atlassian.spring.scanner.version>2.1.7</atlassian.spring.scanner.version>
-        <!-- This property ensures consistency between the key in atlassian-plugin.xml and the OSGi bundle's key. -->
+        <jira.version>10.3.2</jira.version>
+        <amps.version>9.1.1</amps.version>
+        <plugin.testrunner.version>1.2.3</plugin.testrunner.version>
         <atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
-        <!-- TestKit version 6.x for JIRA 6.x -->
         <testkit.version>6.3.11</testkit.version>
-        <quick.reload.version>3.0.0</quick.reload.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <jira.test.version>9.4.2</jira.test.version>
-        <jira.data.version>9.4.2</jira.data.version>
+        <quick.reload.version>1.30.5</quick.reload.version>
+
+        <jira.test.version>10.3.2</jira.test.version>
+        <jira.data.version>10.3.2</jira.data.version>
         <jira.rest.version>3.0.8</jira.rest.version>
         <atlas.template.version>3.0.0</atlas.template.version>
         <atlas.concurrent.version>3.0.0</atlas.concurrent.version>
@@ -286,12 +314,19 @@
             <url>https://nexus.meetmecorp.com/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
-
     <scm>
         <connection>scm:git:git://github.com/MeetMe/jira-gerrit-plugin.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/MeetMe/jira-gerrit-plugin.git</developerConnection>
         <url>https://github.com/MeetMe/jira-gerrit-plugin</url>
         <tag>HEAD</tag>
     </scm>
+
+     <!-- Fix for jndi dependency no longer available online without login -->
+    <repositories>
+        <repository>
+            <id>atlassian-plugin-sdk</id>
+            <url>file:///${env.ATLASSIAN_SDK}/repository</url>
+        </repository>
+    </repositories>
 
 </project>

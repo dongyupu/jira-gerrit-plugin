@@ -12,7 +12,7 @@ import com.atlassian.jira.mock.component.MockComponentWorker;
 import com.atlassian.jira.mock.issue.MockIssue;
 import com.atlassian.jira.user.ApplicationUser;
 import com.opensymphony.workflow.WorkflowContext;
-import com.sonyericsson.hudson.plugins.gerrit.gerritevents.GerritQueryException;
+import com.sonymobile.tools.gerrit.gerritevents.GerritQueryException;
 
 import org.mockito.Mock;
 
