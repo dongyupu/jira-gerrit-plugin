@@ -25,14 +25,14 @@ table.gerrit-review-approvals td.review-negative,
 div.flooded span.review-negative,
 .gerrit-review-score.review-negative
 {
-  color: var("--ds-text-danger", #f00);
+  color: var(--ds-text-danger, #f00);
 }
 
 table.gerrit-review-approvals td.review-positive,
 div.flooded span.review-positive,
 .gerrit-review-score.review-positive
 {
-  color: var("--ds-text-success", #08A400);
+  color: var(--ds-text-success, #08A400);
 }
 
 .gerrit-status-ABANDONED span.gerrit-review
@@ -60,7 +60,7 @@ span.gerrit-review
 
 span.gerrit-open-reviews
 {
-  color: var("--ds-text-accent-red", #900);
+  color: var(--ds-text-accent-red, #900);
 }
 
 span.gerrit-no-reviews
@@ -99,14 +99,14 @@ span.gerrit-no-reviews
 {
   width: 100%;
   margin: 0 0 8px 0;
-  background-color: var("--ds-surface", white);
+  background-color: var(--ds-surface, white);
   border-collapse: collapse;
   text-align: left;
 }
 
 #gerrit-reviews-left-panel tr.issuerow:hover
 {
-  background-color: var("--ds-border", #f0f0f0);
+  background-color: var(--ds-border, #f0f0f0);
 }
 
 #gerrit-reviews-left-panel tr td.gerrit-subject
@@ -127,7 +127,7 @@ span.gerrit-no-reviews
 
 #gerrit-reviews-left-panel .nav
 {
-  border-bottom: 1px solid var("--ds-border-input", #eee);
+  border-bottom: 1px solid var(--ds-border-input, #eee);
   vertical-align: middle;
 }
 
