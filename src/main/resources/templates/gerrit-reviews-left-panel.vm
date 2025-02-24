@@ -65,6 +65,12 @@ limitations under the License.
             <a href="$change.url" title="$change.subject" target="gerrit-review-$change.number,$change.patchSet.number">$change.subject</a>
         </td>
 
+        <td class="nav gerrit-lastupdated">
+            <span class="date user-tz">
+                $change.lastUpdated
+            </span>
+        </td>
+
         <td class="nav gerrit-branch">
             $change.branch
         </td>
@@ -121,6 +127,7 @@ limitations under the License.
             <tr>
                 <th>#</th>
                 <th>Subject</th>
+                <th>Last Updated</th>
                 <th>Branch</th>
                 <th>Project</th>
                 <th>Status</th>
