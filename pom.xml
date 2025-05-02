@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.meetme.plugins.jira</groupId>
     <artifactId>gerrit-plugin</artifactId>
-    <version>4.1-SNAPSHOT</version>
+    <version>4.2-SNAPSHOT</version>
 
     <organization>
         <name>MeetMe, Inc.</name>
@@ -277,15 +277,15 @@
     </build>
 
     <properties>
-        <jira.version>10.3.2</jira.version>
+        <jira.version>10.5.1</jira.version>
         <amps.version>9.1.1</amps.version>
         <plugin.testrunner.version>1.2.3</plugin.testrunner.version>
         <atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
         <testkit.version>6.3.11</testkit.version>
         <quick.reload.version>1.30.5</quick.reload.version>
 
-        <jira.test.version>10.3.2</jira.test.version>
-        <jira.data.version>10.3.2</jira.data.version>
+        <jira.test.version>10.5.1</jira.test.version>
+        <jira.data.version>10.5.1</jira.data.version>
         <jira.rest.version>3.0.8</jira.rest.version>
         <atlas.template.version>3.0.0</atlas.template.version>
         <atlas.concurrent.version>3.0.0</atlas.concurrent.version>

@@ -37,13 +37,13 @@ div.flooded span.review-positive,
 
 .gerrit-status-ABANDONED span.gerrit-review
 {
-  background-image: url(images/gerrit-x.png);
+  background-image: url(images/gerrit-x.svg);
 }
 
 .gerrit-status-MERGED span.gerrit-review,
 .gerrit-status-SUBMITTED span.gerrit-review
 {
-  background-image: url(images/gerrit-check.png);
+  background-image: url(images/gerrit-check.svg);
 }
 
 span.gerrit-review
@@ -52,8 +52,9 @@ span.gerrit-review
   text-indent: -9999px;
   width: 16px;
   height: 16px;
+  background-size: 16px;
   background-color: transparent;
-  background-image: url(images/gerrit-icon16.png);
+  background-image: url(images/gerrit-icon.svg);
   background-repeat: no-repeat;
   background-position: 50% 50%;
 }

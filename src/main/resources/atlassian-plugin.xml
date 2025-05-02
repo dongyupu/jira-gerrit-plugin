@@ -20,10 +20,9 @@
         <description>${project.description}</description>
         <version>${project.version}</version>
         <vendor name="${project.organization.name}" url="${project.organization.url}" />
-        <param name="plugin-icon">images/gerrit-icon16.png</param>
-        <param name="plugin-logo">images/meetme_75.png</param>
-        <param name="vendor-icon">images/meetme_16.png</param>
-        <param name="vendor-logo">images/meetme_75.png</param>
+        <param name="plugin-icon">images/gerrit-icon.svg</param>
+        <param name="plugin-logo">images/gerrit-icon.svg</param>
+        <param name="vendor-icon">images/gerrit-icon.svg</param>
         <param name="plugin-type">both</param>
         <param name="configure.url">/plugins/servlet/gerrit/admin</param>
         <param name="atlassian-data-center-compatible">true</param>
@@ -240,8 +239,27 @@
         <context-provider class="com.meetme.plugins.jira.gerrit.webpanel.GerritReviewsIssueAgilePanel" />
         <resource name="i18n" location="i18n.webpanel" type="i18n" />
         <resource name="view" location="templates/gerrit-reviews-agile-panel.vm" type="velocity" />
-        <resource name="icon.png" location="images/gerrit-icon16.png" type="download" />
+        <resource name="icon.svg" location="images/gerrit-icon.svg" type="download" />
         <label key="gh.issue.panel.reference" />
         <tooltip key="gh.issue.panel.reference.tooltip" />
     </web-panel>
+
+    <velocity-allowlist key="velocity-allowlist" name="Velocity Allowlist">
+        <description key="com.meetme.plugins.jira.gerrit.velocity.allowlist">
+            Velocity templates can use these Java methods
+        </description>
+        <method>com.sonymobile.tools.gerrit.gerritevents.dto.attr.Change#getNumber()</method>
+        <method>com.sonymobile.tools.gerrit.gerritevents.dto.attr.Change#getSubject()</method>
+        <method>com.sonymobile.tools.gerrit.gerritevents.dto.attr.Change#getLastUpdated()</method>
+        <method>com.sonymobile.tools.gerrit.gerritevents.dto.attr.Change#getBranch()</method>
+        <method>com.sonymobile.tools.gerrit.gerritevents.dto.attr.Change#getProject()</method>
+        <method>com.sonymobile.tools.gerrit.gerritevents.dto.attr.Change#getStatus()</method>
+        <method>com.sonymobile.tools.gerrit.gerritevents.dto.attr.Approval#getBy()</method>
+        <method>com.sonymobile.tools.gerrit.gerritevents.dto.attr.Change#getUrl()</method>
+        <method>com.sonymobile.tools.gerrit.gerritevents.dto.attr.PatchSet#getNumber()</method>
+        <method>com.meetme.plugins.jira.gerrit.data.dto.GerritChange#isOpen()</method>
+        <method>com.meetme.plugins.jira.gerrit.data.dto.GerritChange#getPatchSet()</method>
+        <method>com.meetme.plugins.jira.gerrit.data.dto.GerritPatchSet#getApprovalsForLabel(java.lang.String)</method>
+        <method>com.meetme.plugins.jira.gerrit.data.dto.GerritApproval#getValueAsInt()</method>
+    </velocity-allowlist>
 </atlassian-plugin>
