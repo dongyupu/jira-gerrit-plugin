@@ -327,6 +327,60 @@
             <id>atlassian-plugin-sdk</id>
             <url>file:///${env.ATLASSIAN_SDK}/repository</url>
         </repository>
+        <repository>
+            <id> XNatLibs</id>
+            <url>https://nrgxnat.jfrog.io/artifactory/libs-release/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>Jenkins Releases</id>
+            <url>https://repo.jenkins-ci.org/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>mvnrepository</id>
+            <url>https://mvnrepository.com/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>atlassian-public</id>
+            <name>Atlassian Public Repository</name>
+            <url>https://maven.atlassian.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
     </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>atlassian-public</id>
+            <name>Atlassian Public Plugin Repository</name>
+            <url>https://maven.atlassian.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 
 </project>

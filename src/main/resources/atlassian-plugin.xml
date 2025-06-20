@@ -80,8 +80,7 @@
 
     <issue-tabpanel name="Gerrit Reviews Tab Panel"
         class="com.meetme.plugins.jira.gerrit.tabpanel.GerritReviewsTabPanel"
-        key="gerrit-reviews-tabpanel"
-        state="disabled">
+        key="gerrit-reviews-tabpanel">
         <description>Show Gerrit reviews related to an issue in an issue tab panel.</description>
         <label key="gerrit.tabpanel.label">Gerrit Reviews</label>
         <resource name="view" location="templates/gerrit-reviews-tabpanel-item.vm" type="velocity" />
@@ -132,7 +131,8 @@
         i18n-name-key="gerrit-reviews-left-panel.name"
         key="gerritreviewsmodule"
         location="atl.jira.view.issue.left.context"
-        weight="750">
+        weight="750"
+        state="disabled">
         <description key="gerrit-reviews-left-panel.description">Show Gerrit reviews in a View Issue panel</description>
         <label key="gerrit-reviews-left-panel.label">Gerrit Reviews</label>
         <context-provider class="com.meetme.plugins.jira.gerrit.webpanel.GerritReviewsIssueLeftPanel" />
@@ -233,7 +233,8 @@
         i18n-name-key="gerrit-reviews-side-panel.name"
         key="gerrit-reviews-agile-panel"
         location="atl.gh.issue.details.tab"
-        weight="1000">
+        weight="1000"
+        state="disabled">
         <description key="gerrit-reviews-side-panel.description">Show Gerrit reviews in the Agile Details panel</description>
         <label key="gerrit-reviews-side-panel.label">Gerrit Reviews</label>
         <context-provider class="com.meetme.plugins.jira.gerrit.webpanel.GerritReviewsIssueAgilePanel" />
