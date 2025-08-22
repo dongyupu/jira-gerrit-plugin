@@ -323,10 +323,10 @@
 
      <!-- Fix for jndi dependency no longer available online without login -->
     <repositories>
-        <repository>
+        <!-- repository>
             <id>atlassian-plugin-sdk</id>
             <url>file:///${env.ATLASSIAN_SDK}/repository</url>
-        </repository>
+        </repository -->
         <repository>
             <id> XNatLibs</id>
             <url>https://nrgxnat.jfrog.io/artifactory/libs-release/</url>
